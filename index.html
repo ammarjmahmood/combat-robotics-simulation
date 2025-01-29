@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battle Bot Calculator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.5.0/math.min.js"></script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #475569;
+            --accent: #f59e0b;
+            --background: #f8fafc;
+            --text: #1e293b;
+            --border: #e2e8f0;
+            --success: #22c55e;
+            --error: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .subheader {
+            text-align: center;
+            color: #cbd5e1;
+            font-size: 1.1rem;
+        }
+
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+
+        .section h2 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--secondary);
+        }
+
+        .input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .unit-selector {
+            padding: 0.75rem;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            background: white;
+            color: var(--secondary);
+            font-size: 0.9rem;
+            cursor: pointer;
+            min-width: 80px;
+        }
+
+        .unit-selector:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .diagram {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .diagram svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .results {
+            background: var(--primary);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-top: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .results h3 {
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .result-item .value {
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 0.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background: none;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--secondary);
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .tab:hover:not(.active) {
+            background: var(--border);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .calculator-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs {
+                flex-wrap: wrap;
+            }
+            
+            .tab {
+                flex: 1 1 auto;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Combat Robot Calculator</h1>
+            <p class="subheader">Design and optimize your combat robot with precise calculations</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('weapon')">Weapon System</button>
+            <button class="tab" onclick="switchTab('drivetrain')">Drivetrain</button>
+            <button class="tab" onclick="switchTab('armor')">Armor & Structure</button>
+        </div>
+
+        <div id="weapon-tab" class="tab-content active">
+            <div class="calculator-grid">
+                <div class="section">
+                    <h2>Weapon Specifications</h2>
+                    <div class="input-group">
+                        <label for="weaponWeight">Weapon Weight</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="weaponWeight" step="0.1">
+                            <select class="unit-selector" id="weightUnit" onchange="updateWeightUnit()">
+                                <option value="lbs">lbs</option>
+                                <option value="kg">kg</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label for="weaponRadius">Weapon Radius</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="weaponRadius" step="0.1">
+                            <select class="unit-selector" id="lengthUnit" onchange="updateLengthUnit()">
+                                <option value="in">inches</option>
+                                <option value="mm">mm</option>
+                                <option value="cm">cm</option>
+                                <option value="m">m</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label for="motorKV">Motor KV Rating</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="motorKV">
+                            <span class="unit-selector">RPM/V</span>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label for="voltage">Battery Voltage</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="voltage">
+                            <span class="unit-selector">V</span>
+                        </div>
+                    </div>
+                    <div class="diagram">
+                        <svg viewBox="0 0 300 200" width="300" height="200">
+                            <circle cx="150" cy="100" r="80" fill="none" stroke="#2563eb" stroke-width="2"/>
+                            <line x1="150" y1="20" x2="150" y2="180" stroke="#2563eb" stroke-width="2"/>
+                            <text x="240" y="100" fill="#475569">Radius</text>
+                            <path d="M 150,100 L 230,100" stroke="#475569" stroke-width="1" stroke-dasharray="4"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>Key Calculations</h2>
+                    <div class="input-group">
+                        <label for="motorPower">Motor Power</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="motorPower">
+                            <span class="unit-selector">watts</span>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label for="gearRatio">Gear Ratio</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="gearRatio" step="0.1">
+                            <span class="unit-selector">:1</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results">
+                <h3>Weapon Analysis</h3>
+                <div class="result-item">
+                    <span>Maximum RPM</span>
+                    <div class="value">
+                        <span id="maxRPM">0</span>
+                        <span>RPM</span>
+                    </div>
+                </div>
+                <div class="result-item">
+                    <span>Stored Energy</span>
+                    <div class="value">
+                        <span id="storedEnergy">0</span>
+                        <select class="unit-selector" id="energyUnit" onchange="updateEnergyUnit()">
+                            <option value="J">J</option>
+                            <option value="kJ">kJ</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="result-item">
+                    <span>Tip Speed</span>
+                    <div class="value">
+                        <span id="tipSpeed">0</span>
+                        <select class="unit-selector" id="speedUnit" onchange="updateSpeedUnit()">
+                            <option value="mph">mph</option>
+                            <option value="kph">km/h</option>
+                            <option value="mps">m/s</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="result-item">
+                    <span>Spinup Time</span>
+                    <div class="value">
+                        <span id="spinupTime">0</span>
+                        <span>sec</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+        <div id="drivetrain-tab" class="tab-content">
+            <div class="calculator-grid">
+                <div class="section">
+                    <h2>Drive Motors</h2>
+                    <div class="input-group">
+                        <label for="motorQuantity">Number of Drive Motors</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="motorQuantity" min="1" max="8" value="2">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label for="drivePower">Power per Motor</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="drivePower">
+                            <span class="unit-selector">watts</span>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label for="wheelDiameter">Wheel Diameter</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="wheelDiameter">
+                            <select class="unit-selector" id="wheelUnit" onchange="updateWheelUnit()">
+                                <option value="in">inches</option>
+                                <option value="mm">mm</option>
+                                <option value="cm">cm</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label for="driveVoltage">Battery Voltage</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="driveVoltage">
+                            <span class="unit-selector">V</span>
+                        </div>
+                    </div>
+                    <div class="diagram">
+                        <svg viewBox="0 0 300 200" width="300" height="200">
+                            <!-- Top-down robot diagram -->
+                            <rect x="50" y="50" width="200" height="100" fill="none" stroke="#2563eb" stroke-width="2"/>
+                            <circle cx="80" cy="40" r="20" fill="none" stroke="#2563eb" stroke-width="2"/>
+                            <circle cx="220" cy="40" r="20" fill="none" stroke="#2563eb" stroke-width="2"/>
+                            <circle cx="80" cy="160" r="20" fill="none" stroke="#2563eb" stroke-width="2"/>
+                            <circle cx="220" cy="160" r="20" fill="none" stroke="#2563eb" stroke-width="2"/>
+                            <text x="150" y="100" fill="#475569" text-anchor="middle">Drive Configuration</text>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="results">
+                    <h3>Drive Analysis</h3>
+                    <div class="result-item">
+                        <span>Top Speed</span>
+                        <div class="value">
+                            <span id="topSpeed">0</span>
+                            <select class="unit-selector" id="driveSpeedUnit" onchange="updateDriveSpeedUnit()">
+                                <option value="mph">mph</option>
+                                <option value="kph">km/h</option>
+                                <option value="mps">m/s</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="result-item">
+                        <span>Pushing Force</span>
+                        <div class="value">
+                            <span id="pushForce">0</span>
+                            <span>N</span>
+                        </div>
+                    </div>
+                    <div class="result-item">
+                        <span>Acceleration</span>
+                        <div class="value">
+                            <span id="acceleration">0</span>
+                            <span>m/s²</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="armor-tab" class="tab-content">
+            <div class="calculator-grid">
+                <div class="section">
+                    <h2>Armor Configuration</h2>
+                    <div class="input-group">
+                        <label for="armorMaterial">Material</label>
+                        <select id="armorMaterial" class="unit-selector">
+                            <option value="aluminum">Aluminum 6061-T6</option>
+                            <option value="steel">Hardened Steel</option>
+                            <option value="titanium">Grade 5 Titanium</option>
+                            <option value="uhmw">UHMW Plastic</option>
+                            <option value="hardox">Hardox 450</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="armorThickness">Thickness</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="armorThickness" step="0.1">
+                            <select class="unit-selector" id="thicknessUnit" onchange="updateThicknessUnit()">
+                                <option value="mm">mm</option>
+                                <option value="in">inches</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label for="armorArea">Coverage Area</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="armorArea">
+                            <select class="unit-selector" id="areaUnit" onchange="updateAreaUnit()">
+                                <option value="in2">in²</option>
+                                <option value="cm2">cm²</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="diagram">
+                        <svg viewBox="0 0 300 200" width="300" height="200">
+                            <!-- Armor diagram -->
+                            <path d="M 50,50 L 250,50 L 250,150 L 50,150 Z" fill="none" stroke="#2563eb" stroke-width="2"/>
+                            <path d="M 50,50 L 250,50" stroke="#475569" stroke-width="1" stroke-dasharray="4"/>
+                            <text x="150" y="40" fill="#475569" text-anchor="middle">Armor Plate</text>
+                            <line x1="60" y1="70" x2="60" y2="130" stroke="#2563eb" stroke-width="2"/>
+                            <text x="80" y="100" fill="#475569">Thickness</text>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="results">
+                    <h3>Armor Analysis</h3>
+                    <div class="result-item">
+                        <span>Total Weight</span>
+                        <div class="value">
+                            <span id="armorWeight">0</span>
+                            <select class="unit-selector" id="armorWeightUnit" onchange="updateArmorWeightUnit()">
+                                <option value="lbs">lbs</option>
+                                <option value="kg">kg</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="result-item">
+                        <span>Impact Resistance</span>
+                        <div class="value">
+                            <span id="impactRating">0</span>
+                            <span>J</span>
+                        </div>
+                    </div>
+                    <div class="result-item">
+                        <span>Cost Estimate</span>
+                        <div class="value">
+                            <span id="armorCost">0</span>
+                            <span>USD</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // Unit conversion functions
+        function convertWeight(value, fromUnit, toUnit) {
+            const conversions = {
+                'lbs_to_kg': val => val * 0.453592,
+                'kg_to_lbs': val => val * 2.20462
+            };
+            const key = `${fromUnit}_to_${toUnit}`;
+            return conversions[key] ? conversions[key](value) : value;
+        }
+
+        function convertLength(value, fromUnit, toUnit) {
+            const toMm = {
+                'in': val => val * 25.4,
+                'mm': val => val,
+                'cm': val => val * 10,
+                'm': val => val * 1000
+            };
+            const fromMm = {
+                'in': val => val / 25.4,
+                'mm': val => val,
+                'cm': val => val / 10,
+                'm': val => val / 1000
+            };
+            return fromMm[toUnit](toMm[fromUnit](value));
+        }
+
+        function convertSpeed(value, fromUnit, toUnit) {
+            const toMps = {
+                'mph': val => val * 0.44704,
+                'kph': val => val * 0.277778,
+                'mps': val => val
+            };
+            const fromMps = {
+                'mph': val => val * 2.23694,
+                'kph': val => val * 3.6,
+                'mps': val => val
+            };
+            return fromMps[toUnit](toMps[fromUnit](value));
+        }
+
+        function convertEnergy(value, fromUnit, toUnit) {
+            const conversions = {
+                'J_to_kJ': val => val / 1000,
+                'kJ_to_J': val => val * 1000
+            };
+            const key = `${fromUnit}_to_${toUnit}`;
+            return conversions[key] ? conversions[key](value) : value;
+        }
+
+        // Update functions for unit changes
+        function updateWeightUnit() {
+            const input = document.getElementById('weaponWeight');
+            const oldUnit = document.getElementById('weightUnit').value;
+            const newValue = convertWeight(parseFloat(input.value), oldUnit, 'lbs');
+            input.value = newValue.toFixed(2);
+            calculateAll();
+        }
+
+        function updateLengthUnit() {
+            const input = document.getElementById('weaponRadius');
+            const oldUnit = document.getElementById('lengthUnit').value;
+            const newValue = convertLength(parseFloat(input.value), oldUnit, 'in');
+            input.value = newValue.toFixed(2);
+            calculateAll();
+        }
+
+        function updateSpeedUnit() {
+            calculateAll();
+        }
+
+        function updateEnergyUnit() {
+            calculateAll();
+        }
+
+        // Main calculation function
+        function calculateAll() {
+            const kv = parseFloat(document.getElementById('motorKV').value) || 0;
+            const voltage = parseFloat(document.getElementById('voltage').value) || 0;
+            const weight = parseFloat(document.getElementById('weaponWeight').value) || 0;
+            const radius = parseFloat(document.getElementById('weaponRadius').value) || 0;
+            const motorPower = parseFloat(document.getElementById('motorPower').value) || 0;
+            const gearRatio = parseFloat(document.getElementById('gearRatio').value) || 1;
+
+            // Convert units to standard units (kg, m) for calculations
+            const weightKg = convertWeight(weight, document.getElementById('weightUnit').value, 'kg');
+            const radiusM = convertLength(radius, document.getElementById('lengthUnit').value, 'm');
+
+            // Calculate RPM
+            const rpm = (kv * voltage) / gearRatio;
+            document.getElementById('maxRPM').textContent = Math.round(rpm);
+
+            // Calculate stored energy
+            const radiansPerSec = rpm * 2 * Math.PI / 60;
+            const momentOfInertia = weightKg * radiusM * radiusM;  // Simple disk approximation
+            const energyJoules = 0.5 * momentOfInertia * radiansPerSec * radiansPerSec;
+            
+            // Display energy in selected unit
+            const energyUnit = document.getElementById('energyUnit').value;
+            const displayEnergy = convertEnergy(energyJoules, 'J', energyUnit);
+            document.getElementById('storedEnergy').textContent = displayEnergy.toFixed(1);
+
+            // Calculate tip speed
+            const tipSpeedMPS = radiansPerSec * radiusM;
+            const speedUnit = document.getElementById('speedUnit').value;
+            const displaySpeed = convertSpeed(tipSpeedMPS, 'mps', speedUnit);
+            document.getElementById('tipSpeed').textContent = displaySpeed.toFixed(1);
+
+            // Calculate spinup time (simplified)
+            const spinupTime = (momentOfInertia * radiansPerSec) / motorPower;
+            document.getElementById('spinupTime').textContent = spinupTime.toFixed(2);
+        }
+
+        // Tab switching function
+        function switchTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            const buttons = document.querySelectorAll('.tab');
+            buttons.forEach(button => button.classList.remove('active'));
+            
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Add event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('input', calculateAll);
+            });
+
+            // Initial calculation
+            calculateAll();
+        });
+    </script>
+</body>
+</html>
