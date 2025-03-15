@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Robot Body -->
+  <rect x="16" y="20" width="32" height="24" rx="2" fill="#2563eb" stroke="#1d4ed8" stroke-width="2"/>
+  
+  <!-- Weapon Spinner/Blade -->
+  <circle cx="32" cy="32" r="14" fill="none" stroke="#1d4ed8" stroke-width="2" stroke-dasharray="2"/>
+  <path d="M32,18 L38,13 L45,16 L41,25 Z" fill="#f59e0b" stroke="#1d4ed8" stroke-width="1"/>
+  <path d="M32,46 L26,51 L19,48 L23,39 Z" fill="#f59e0b" stroke="#1d4ed8" stroke-width="1"/>
+  
+  <!-- Wheels -->
+  <circle cx="14" cy="24" r="6" fill="#475569" stroke="#1d4ed8" stroke-width="2"/>
+  <circle cx="14" cy="40" r="6" fill="#475569" stroke="#1d4ed8" stroke-width="2"/>
+  <circle cx="50" cy="24" r="6" fill="#475569" stroke="#1d4ed8" stroke-width="2"/>
+  <circle cx="50" cy="40" r="6" fill="#475569" stroke="#1d4ed8" stroke-width="2"/>
+  
+  <!-- Armor Plates -->
+  <rect x="10" y="30" width="4" height="4" fill="#94a3b8" stroke="#1d4ed8" stroke-width="1"/>
+  <rect x="50" y="30" width="4" height="4" fill="#94a3b8" stroke="#1d4ed8" stroke-width="1"/>
+  
+  <!-- Details -->
+  <rect x="26" y="16" width="12" height="4" rx="1" fill="#94a3b8" stroke="#1d4ed8" stroke-width="1"/>
+  <circle cx="24" cy="26" r="2" fill="#ef4444"/>
+  <circle cx="40" cy="26" r="2" fill="#ef4444"/>
+</svg>

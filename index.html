@@ -4,230 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Battle Bot Calculator</title>
+    <link rel="icon" href="favicon.ico">
+    <link rel="icon" type="image/svg+xml" href="robot-icon.svg">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.5.0/math.min.js"></script>
-    <style>
-        :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
-            --secondary: #475569;
-            --accent: #f59e0b;
-            --background: #f8fafc;
-            --text: #1e293b;
-            --border: #e2e8f0;
-            --success: #22c55e;
-            --error: #ef4444;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
-
-        body {
-            background: var(--background);
-            color: var(--text);
-            line-height: 1.6;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        header {
-            background: var(--primary);
-            color: white;
-            padding: 1rem 0;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-
-        header h1 {
-            text-align: center;
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .subheader {
-            text-align: center;
-            color: #cbd5e1;
-            font-size: 1.1rem;
-        }
-
-        .calculator-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-
-        .section {
-            background: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-        }
-
-        .section h2 {
-            color: var(--primary);
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid var(--border);
-        }
-
-        .input-group {
-            margin-bottom: 1.5rem;
-            position: relative;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: var(--secondary);
-        }
-
-        .input-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .input-group input {
-            flex: 1;
-            padding: 0.75rem;
-            border: 2px solid var(--border);
-            border-radius: 6px;
-            font-size: 1rem;
-            transition: border-color 0.2s;
-        }
-
-        .input-group input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        .unit-selector {
-            padding: 0.75rem;
-            border: 2px solid var(--border);
-            border-radius: 6px;
-            background: white;
-            color: var(--secondary);
-            font-size: 0.9rem;
-            cursor: pointer;
-            min-width: 80px;
-        }
-
-        .unit-selector:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        .diagram {
-            background: #f8fafc;
-            padding: 1rem;
-            border-radius: 8px;
-            margin: 1rem 0;
-            text-align: center;
-        }
-
-        .diagram svg {
-            max-width: 100%;
-            height: auto;
-        }
-
-        .results {
-            background: var(--primary);
-            color: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            margin-top: 2rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-
-        .results h3 {
-            margin-bottom: 1rem;
-            font-size: 1.25rem;
-        }
-
-        .result-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.75rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .result-item:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
-        }
-
-        .result-item .value {
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .tabs {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            background: white;
-            padding: 0.5rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
-        }
-
-        .tab {
-            padding: 0.75rem 1.5rem;
-            background: none;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 500;
-            color: var(--secondary);
-            transition: all 0.2s;
-        }
-
-        .tab.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        .tab:hover:not(.active) {
-            background: var(--border);
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        @media (max-width: 768px) {
-            .calculator-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .tabs {
-                flex-wrap: wrap;
-            }
-            
-            .tab {
-                flex: 1 1 auto;
-                text-align: center;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
@@ -239,9 +19,9 @@
 
     <main class="container">
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('weapon')">Weapon System</button>
-            <button class="tab" onclick="switchTab('drivetrain')">Drivetrain</button>
-            <button class="tab" onclick="switchTab('armor')">Armor & Structure</button>
+            <button class="tab active" id="weapon-button">Weapon System</button>
+            <button class="tab" id="drivetrain-button">Drivetrain</button>
+            <button class="tab" id="armor-button">Armor & Structure</button>
         </div>
 
         <div id="weapon-tab" class="tab-content active">
@@ -389,16 +169,22 @@
                             <span class="unit-selector">V</span>
                         </div>
                     </div>
-                    <div class="diagram">
-                        <svg viewBox="0 0 300 200" width="300" height="200">
-                            <!-- Top-down robot diagram -->
-                            <rect x="50" y="50" width="200" height="100" fill="none" stroke="#2563eb" stroke-width="2"/>
-                            <circle cx="80" cy="40" r="20" fill="none" stroke="#2563eb" stroke-width="2"/>
-                            <circle cx="220" cy="40" r="20" fill="none" stroke="#2563eb" stroke-width="2"/>
-                            <circle cx="80" cy="160" r="20" fill="none" stroke="#2563eb" stroke-width="2"/>
-                            <circle cx="220" cy="160" r="20" fill="none" stroke="#2563eb" stroke-width="2"/>
-                            <text x="150" y="100" fill="#475569" text-anchor="middle">Drive Configuration</text>
-                        </svg>
+                    <div class="input-group">
+                        <label for="robotWeight">Robot Weight</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="robotWeight">
+                            <select class="unit-selector" id="robotWeightUnit" onchange="updateRobotWeightUnit()">
+                                <option value="lbs">lbs</option>
+                                <option value="kg">kg</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Drive Configuration</label>
+                        <div class="diagram interactive-diagram">
+                            <canvas id="wheelCanvas" width="300" height="200"></canvas>
+                            <div class="canvas-instructions">Drag wheels to position them</div>
+                        </div>
                     </div>
                 </div>
 
@@ -429,6 +215,9 @@
                             <span>m/s²</span>
                         </div>
                     </div>
+                    <div class="result-note">
+                        <small>Wheel positioning affects stability and maneuverability</small>
+                    </div>
                 </div>
             </div>
         </div>
@@ -439,7 +228,7 @@
                     <h2>Armor Configuration</h2>
                     <div class="input-group">
                         <label for="armorMaterial">Material</label>
-                        <select id="armorMaterial" class="unit-selector">
+                        <select id="armorMaterial" class="unit-selector" onchange="calculateArmor()">
                             <option value="aluminum">Aluminum 6061-T6</option>
                             <option value="steel">Hardened Steel</option>
                             <option value="titanium">Grade 5 Titanium</option>
@@ -467,15 +256,9 @@
                             </select>
                         </div>
                     </div>
-                    <div class="diagram">
-                        <svg viewBox="0 0 300 200" width="300" height="200">
-                            <!-- Armor diagram -->
-                            <path d="M 50,50 L 250,50 L 250,150 L 50,150 Z" fill="none" stroke="#2563eb" stroke-width="2"/>
-                            <path d="M 50,50 L 250,50" stroke="#475569" stroke-width="1" stroke-dasharray="4"/>
-                            <text x="150" y="40" fill="#475569" text-anchor="middle">Armor Plate</text>
-                            <line x1="60" y1="70" x2="60" y2="130" stroke="#2563eb" stroke-width="2"/>
-                            <text x="80" y="100" fill="#475569">Thickness</text>
-                        </svg>
+                    <div class="diagram interactive-diagram">
+                        <canvas id="armorCanvas" width="300" height="200"></canvas>
+                        <div class="canvas-instructions">Drag corners to resize armor plate</div>
                     </div>
                 </div>
 
@@ -505,147 +288,14 @@
                             <span>USD</span>
                         </div>
                     </div>
+                    <div class="result-note">
+                        <small>Resize plate to adjust coverage area</small>
+                    </div>
                 </div>
             </div>
         </div>
-
     </main>
 
-    <script>
-        // Unit conversion functions
-        function convertWeight(value, fromUnit, toUnit) {
-            const conversions = {
-                'lbs_to_kg': val => val * 0.453592,
-                'kg_to_lbs': val => val * 2.20462
-            };
-            const key = `${fromUnit}_to_${toUnit}`;
-            return conversions[key] ? conversions[key](value) : value;
-        }
-
-        function convertLength(value, fromUnit, toUnit) {
-            const toMm = {
-                'in': val => val * 25.4,
-                'mm': val => val,
-                'cm': val => val * 10,
-                'm': val => val * 1000
-            };
-            const fromMm = {
-                'in': val => val / 25.4,
-                'mm': val => val,
-                'cm': val => val / 10,
-                'm': val => val / 1000
-            };
-            return fromMm[toUnit](toMm[fromUnit](value));
-        }
-
-        function convertSpeed(value, fromUnit, toUnit) {
-            const toMps = {
-                'mph': val => val * 0.44704,
-                'kph': val => val * 0.277778,
-                'mps': val => val
-            };
-            const fromMps = {
-                'mph': val => val * 2.23694,
-                'kph': val => val * 3.6,
-                'mps': val => val
-            };
-            return fromMps[toUnit](toMps[fromUnit](value));
-        }
-
-        function convertEnergy(value, fromUnit, toUnit) {
-            const conversions = {
-                'J_to_kJ': val => val / 1000,
-                'kJ_to_J': val => val * 1000
-            };
-            const key = `${fromUnit}_to_${toUnit}`;
-            return conversions[key] ? conversions[key](value) : value;
-        }
-
-        // Update functions for unit changes
-        function updateWeightUnit() {
-            const input = document.getElementById('weaponWeight');
-            const oldUnit = document.getElementById('weightUnit').value;
-            const newValue = convertWeight(parseFloat(input.value), oldUnit, 'lbs');
-            input.value = newValue.toFixed(2);
-            calculateAll();
-        }
-
-        function updateLengthUnit() {
-            const input = document.getElementById('weaponRadius');
-            const oldUnit = document.getElementById('lengthUnit').value;
-            const newValue = convertLength(parseFloat(input.value), oldUnit, 'in');
-            input.value = newValue.toFixed(2);
-            calculateAll();
-        }
-
-        function updateSpeedUnit() {
-            calculateAll();
-        }
-
-        function updateEnergyUnit() {
-            calculateAll();
-        }
-
-        // Main calculation function
-        function calculateAll() {
-            const kv = parseFloat(document.getElementById('motorKV').value) || 0;
-            const voltage = parseFloat(document.getElementById('voltage').value) || 0;
-            const weight = parseFloat(document.getElementById('weaponWeight').value) || 0;
-            const radius = parseFloat(document.getElementById('weaponRadius').value) || 0;
-            const motorPower = parseFloat(document.getElementById('motorPower').value) || 0;
-            const gearRatio = parseFloat(document.getElementById('gearRatio').value) || 1;
-
-            // Convert units to standard units (kg, m) for calculations
-            const weightKg = convertWeight(weight, document.getElementById('weightUnit').value, 'kg');
-            const radiusM = convertLength(radius, document.getElementById('lengthUnit').value, 'm');
-
-            // Calculate RPM
-            const rpm = (kv * voltage) / gearRatio;
-            document.getElementById('maxRPM').textContent = Math.round(rpm);
-
-            // Calculate stored energy
-            const radiansPerSec = rpm * 2 * Math.PI / 60;
-            const momentOfInertia = weightKg * radiusM * radiusM;  // Simple disk approximation
-            const energyJoules = 0.5 * momentOfInertia * radiansPerSec * radiansPerSec;
-            
-            // Display energy in selected unit
-            const energyUnit = document.getElementById('energyUnit').value;
-            const displayEnergy = convertEnergy(energyJoules, 'J', energyUnit);
-            document.getElementById('storedEnergy').textContent = displayEnergy.toFixed(1);
-
-            // Calculate tip speed
-            const tipSpeedMPS = radiansPerSec * radiusM;
-            const speedUnit = document.getElementById('speedUnit').value;
-            const displaySpeed = convertSpeed(tipSpeedMPS, 'mps', speedUnit);
-            document.getElementById('tipSpeed').textContent = displaySpeed.toFixed(1);
-
-            // Calculate spinup time (simplified)
-            const spinupTime = (momentOfInertia * radiansPerSec) / motorPower;
-            document.getElementById('spinupTime').textContent = spinupTime.toFixed(2);
-        }
-
-        // Tab switching function
-        function switchTab(tabName) {
-            const tabs = document.querySelectorAll('.tab-content');
-            tabs.forEach(tab => tab.classList.remove('active'));
-            
-            const buttons = document.querySelectorAll('.tab');
-            buttons.forEach(button => button.classList.remove('active'));
-            
-            document.getElementById(`${tabName}-tab`).classList.add('active');
-            event.target.classList.add('active');
-        }
-
-        // Add event listeners
-        document.addEventListener('DOMContentLoaded', () => {
-            const inputs = document.querySelectorAll('input');
-            inputs.forEach(input => {
-                input.addEventListener('input', calculateAll);
-            });
-
-            // Initial calculation
-            calculateAll();
-        });
-    </script>
+    <script src="calculator.js"></script>
 </body>
 </html>
